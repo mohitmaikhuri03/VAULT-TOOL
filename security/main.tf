@@ -9,6 +9,12 @@ resource "aws_security_group" "public" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+ingress {
+    from_port   = 0             # Open from port 0
+    to_port     = 0             # Open to port 65535 (all ports)
+    protocol    = "-1"          # "-1" means all protocols
+    cidr_blocks = ["0.0.0.0/0"] # Allow traffic from all IPs
+  }
   ingress {
     from_port   = -1
     to_port     = -1
@@ -55,6 +61,13 @@ resource "aws_security_group" "private" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+ingress {
+    from_port   = 0             # Open from port 0
+    to_port     = 0             # Open to port 65535 (all ports)
+    protocol    = "-1"          # "-1" means all protocols
+    cidr_blocks = ["0.0.0.0/0"] # Allow traffic from all IPs
   }
 #  added
   ingress {
