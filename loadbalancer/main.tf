@@ -17,12 +17,15 @@ resource "aws_lb_target_group" "vault_tg" {
   vpc_id   = var.vpc_id
 
   health_check {
-    path                = "/"
+    enabled             = true
     interval            = 30
+    port                = 8200
+    protocol            = "HTTP"
+    path                = "/v1/sys/health?uninitcode=200"
     timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
-    matcher             = "200-299"
+    matcher             = "200"
   }
 }
 
