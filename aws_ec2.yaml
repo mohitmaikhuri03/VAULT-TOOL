@@ -19,3 +19,6 @@ keyed_groups:
 filters:
   instance-state-name: running
 remote_user: ubuntu
+compose:
+  ansible_host: private_ip_address
+
