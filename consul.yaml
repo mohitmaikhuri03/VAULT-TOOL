@@ -1,0 +1,106 @@
+---
+- name: Setup Consul Server Cluster
+  hosts: 
+    - tag_Name_consul
+    - tag_Name_Vault
+  become: yes
+  vars:
+    consul_version: "1.14.4"
+    retry_join: "{{ groups['tag_Name_consul'] | map('extract', hostvars, ['private_ip_address']) | list }}"
+
+  tasks:
+
+    - name: Debug private IPs for retry_join
+      debug:
+        msg: "{{ retry_join }}"
+
+    - name: Install prerequisites
+      apt:
+        name:
+          - unzip
+          - wget
+        state: present
+        update_cache: yes
+
+    - name: Download Consul binary
+      get_url:
+        url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
+        dest: /tmp/consul.zip
+
+    - name: Install Consul
+      unarchive:
+        src: /tmp/consul.zip
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: Verify Consul installation
+      command: consul version
+      ignore_errors: yes
+
+    - name: Create required directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - /var/consul/data
+        - /usr/local/etc/consul
+        - /var/run/consul
+
+    - name: Set advertise address dynamically
+      set_fact:
+        advertise_addr: "{{ ansible_default_ipv4.address }}"
+
+    - name: Configure Consul
+      copy:
+        dest: /usr/local/etc/consul/consul.json
+        content: |
+          {
+            "server": true,
+            "node_name": "{{ inventory_hostname }}",
+            "datacenter": "dc1",
+            "data_dir": "/var/consul/data",
+            "bind_addr": "0.0.0.0",
+            "client_addr": "0.0.0.0",
+            "advertise_addr": "{{ advertise_addr }}",
+            "bootstrap_expect": 3,
+            "retry_join": {{ retry_join | to_json }},
+            "ui": true,
+            "log_level": "DEBUG",
+            "enable_syslog": true,
+            "acl_enforce_version_8": false
+          }
+
+    - name: Configure Consul systemd service
+      copy:
+        dest: /etc/systemd/system/consul.service
+        content: |
+          [Unit]
+          Description=Consul server agent
+          Requires=network-online.target
+          After=network-online.target
+
+          [Service]
+          PIDFile=/var/run/consul/consul-server.pid
+          PermissionsStartOnly=true
+          ExecStart=/usr/local/bin/consul agent \
+              -config-file=/usr/local/etc/consul/consul.json \
+              -pid-file=/var/run/consul/consul-server.pid
+          ExecReload=/bin/kill -HUP $MAINPID
+          KillMode=process
+          KillSignal=SIGTERM
+          Restart=on-failure
+          RestartSec=42s
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Start and enable Consul service
+      systemd:
+        name: consul
+        enabled: yes
+        state: started
