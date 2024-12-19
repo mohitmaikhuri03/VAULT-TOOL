@@ -31,7 +31,7 @@ resource "aws_lb_target_group" "vault_tg" {
 
 resource "aws_lb_target_group_attachment" "vault" {
   target_group_arn = aws_lb_target_group.vault_tg.arn
-  target_id        = var.consul_instance_id
+  target_id        = var.vault_instance_id
   
   port             = 8200
 }
