@@ -18,7 +18,7 @@ variable "private_subnet_id" {
   type        = string
 }
 
-variable "vault_instance_id" {
+variable "consul_instance_id" {
   description = "Vault instance ID"
   type        = string
 }
