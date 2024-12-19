@@ -1,6 +1,6 @@
 resource "aws_lb" "vault_lb" {
   name               = "vault-lb"
-  internal           = true
+  internal           = false
   load_balancer_type = "application"
   security_groups    = [var.private_sg_id]
   subnets            = [var.public_subnet_id, var.private_subnet_id]
