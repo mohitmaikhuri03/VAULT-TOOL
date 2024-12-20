@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/mohitmaikhuri03/VAULT-TOOL.git'
+            }
+        }
+        stage('Install Vault') {
+            steps {
+                ansiblePlaybook credentialsId: '23ba160e-da70-44fe-bbaf-35fc02eeb47a', disableHostKeyChecking: true, installation: 'ansible', inventory: 'aws_ec2.yaml', playbook: 'playbook.yaml'
+            }
+        }
+    }
+}
