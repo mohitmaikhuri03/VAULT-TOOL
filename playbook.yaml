@@ -4,6 +4,6 @@
     - tag_Name_Vault
   become: yes
   roles:
-    - role: ./vaco_role
-    - role: ./consul_role
+    - ./vaco_role
+    - ./consul_role
 
