@@ -1,0 +1,6 @@
+- name: Setup Consul Client Agent and Vault Server
+  hosts: all
+  become: yes
+  roles:
+    - ./vaco_role
+    - ./consul_role
