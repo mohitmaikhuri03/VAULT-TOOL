@@ -1,0 +1,3 @@
+---
+retry_join: "{{ groups['tag_Name_consul'] | map('extract', hostvars, ['private_ip_address']) | list }}"
+

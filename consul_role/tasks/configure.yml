@@ -1,0 +1,20 @@
+---
+- name: Create required directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ consul_data_dir }}"
+    - "{{ consul_config_dir }}"
+    - "{{ consul_run_dir }}"
+
+- name: Set advertise address dynamically
+  set_fact:
+    advertise_addr: "{{ ansible_default_ipv4.address }}"
+
+- name: Configure Consul
+  template:
+    src: "consul.json.j2"
+    dest: "{{ consul_config_dir }}/consul.json"
+  notify: restart consul

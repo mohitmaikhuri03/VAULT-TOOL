@@ -1,0 +1,33 @@
+---
+- name: Download and install Vault
+  shell: |
+    wget https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip
+    unzip vault_{{ vault_version }}_linux_amd64.zip
+    mv vault /usr/local/bin/
+    rm -f vault_{{ vault_version }}_linux_amd64.zip
+  args:
+    creates: /usr/local/bin/vault
+
+- name: Create Vault configuration directory
+  file:
+    path: "{{ vault_config_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Configure Vault server
+  template:
+    src: vault_server.hcl.j2
+    dest: "{{ vault_config_dir }}/vault_server.hcl"
+  notify: restart vault
+
+- name: Configure Vault service
+  template:
+    src: vault.service.j2
+    dest: /etc/systemd/system/vault.service
+  notify: restart vault
+
+- name: Start and enable Vault service
+  systemd:
+    name: vault
+    state: started
+    enabled: true

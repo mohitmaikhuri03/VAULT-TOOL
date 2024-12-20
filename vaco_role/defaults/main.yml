@@ -1,0 +1,9 @@
+---
+consul_version: "1.14.4"
+vault_version: "1.12.3"
+consul_datacenter: "dc1"
+consul_node_name: "consul_c1"
+consul_data_dir: "/var/consul/data"
+consul_config_dir: "/usr/local/etc/consul"
+vault_config_dir: "/etc/vault"
+

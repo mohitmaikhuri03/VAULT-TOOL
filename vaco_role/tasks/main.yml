@@ -1,0 +1,7 @@
+---
+- name: Include Consul tasks
+  include_tasks: consul.yml
+
+- name: Include Vault tasks
+  include_tasks: vault.yml
+

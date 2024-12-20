@@ -1,0 +1,11 @@
+---
+consul_version: "1.14.4"
+consul_datacenter: "dc1"
+consul_data_dir: "/var/consul/data"
+consul_config_dir: "/usr/local/etc/consul"
+consul_run_dir: "/var/run/consul"
+consul_bootstrap_expect: 3
+consul_log_level: "DEBUG"
+consul_enable_syslog: true
+consul_acl_enforce_version_8: false
+

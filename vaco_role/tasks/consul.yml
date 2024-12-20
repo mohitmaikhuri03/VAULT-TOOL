@@ -1,0 +1,42 @@
+---
+- name: Install dependencies
+  apt:
+    name: ["wget", "unzip"]
+    state: present
+
+- name: Download and install Consul
+  shell: |
+    wget https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip
+    unzip consul_{{ consul_version }}_linux_amd64.zip
+    mv consul /usr/local/bin/
+    cp /usr/local/bin/consul /usr/bin/
+    rm -f consul_{{ consul_version }}_linux_amd64.zip
+  args:
+    creates: /usr/local/bin/consul
+
+- name: Create Consul directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ consul_config_dir }}"
+    - "{{ consul_data_dir }}"
+
+- name: Configure Consul client
+  template:
+    src: consul_client.json.j2
+    dest: "{{ consul_config_dir }}/consul_c1.json"
+  notify: restart consul
+
+- name: Configure Consul service
+  template:
+    src: consul.service.j2
+    dest: /etc/systemd/system/consul.service
+  notify: restart consul
+
+- name: Start and enable Consul service
+  systemd:
+    name: consul
+    state: started
+    enabled: true

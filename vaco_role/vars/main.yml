@@ -1,0 +1,5 @@
+---
+# Add any variables that shouldn't be overridden
+vault_private_ip: "{{ groups['tag_Name_Vault'] | map('extract', hostvars, ['private_ip_address']) | list }}"
+consul_servers: "{{ groups['tag_Name_consul'] | map('extract', hostvars, ['private_ip_address']) | list }}"
+

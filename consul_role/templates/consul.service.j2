@@ -1,0 +1,19 @@
+[Unit]
+Description=Consul server agent
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+PIDFile={{ consul_run_dir }}/consul-server.pid
+PermissionsStartOnly=true
+ExecStart=/usr/local/bin/consul agent \
+    -config-file={{ consul_config_dir }}/consul.json \
+    -pid-file={{ consul_run_dir }}/consul-server.pid
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+KillSignal=SIGTERM
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target

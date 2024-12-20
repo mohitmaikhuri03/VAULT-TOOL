@@ -1,0 +1,22 @@
+---
+- name: Install prerequisites
+  apt:
+    name: ["unzip", "wget"]
+    state: present
+    update_cache: yes
+
+- name: Download Consul binary
+  get_url:
+    url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
+    dest: /tmp/consul.zip
+
+- name: Install Consul
+  unarchive:
+    src: /tmp/consul.zip
+    dest: /usr/local/bin
+    remote_src: yes
+
+- name: Verify Consul installation
+  command: consul version
+  changed_when: false
+  ignore_errors: yes
